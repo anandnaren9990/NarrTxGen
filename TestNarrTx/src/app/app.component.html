@@ -1,0 +1,81 @@
+<div class="container">
+  <header class="header">
+    <h1>narrativetx</h1>
+  </header>
+  
+  <main class="main-content">
+    <div class="input-section">
+      <label for="narrative-input" class="input-label">
+        Enter Narrative Text
+      </label>
+      
+      <textarea 
+        id="narrative-input"
+        class="narrative-input"
+        [(ngModel)]="narrativeText"
+        [maxlength]="maxLength"
+        placeholder="Type your narrative text here..."
+        rows="10"
+        (input)="clearResults()"
+      ></textarea>
+      
+      <div class="character-counter">
+        {{ narrativeText.length }} / {{ maxLength }} characters
+        <span class="remaining" [class.warning]="remainingCharacters < 100">
+          ({{ remainingCharacters }} remaining)
+        </span>
+      </div>
+      
+      <button 
+        class="suggestion-button"
+        (click)="getSuggestion()"
+        [disabled]="narrativeText.length === 0 || isProcessing"
+      >
+        <span *ngIf="!isProcessing">Get Suggestion</span>
+        <span *ngIf="isProcessing">Processing...</span>
+      </button>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-section" *ngIf="showResults">
+      <!-- Error Message -->
+      <div class="error-message" *ngIf="errorMessage">
+        <div class="message-icon">⚠️</div>
+        <p>{{ errorMessage }}</p>
+      </div>
+
+      <!-- Non-Readable Message -->
+      <div class="error-message" *ngIf="!isSuccess && !errorMessage">
+        <div class="message-icon">❌</div>
+        <p>{{ resultMessage }}</p>
+      </div>
+
+      <!-- Success Results -->
+      <div class="success-results" *ngIf="isSuccess">
+        <div class="result-header">
+          <div class="message-icon success-icon">✓</div>
+          <h2>Analysis Complete</h2>
+        </div>
+
+        <div class="result-item">
+          <h3>Readability Score</h3>
+          <div class="score-display" [class.good-score]="readabilityScore >= 50" 
+               [class.medium-score]="readabilityScore >= 20 && readabilityScore < 50">
+            <span class="score-number">{{ readabilityScore }}%</span>
+          </div>
+        </div>
+
+        <div class="result-item">
+          <h3>Cleaned Text</h3>
+          <div class="cleaned-text-box">
+            {{ cleanedText }}
+          </div>
+        </div>
+
+        <button class="copy-button" (click)="copyToClipboard()">
+          Copy Cleaned Text
+        </button>
+      </div>
+    </div>
+  </main>
+</div>
